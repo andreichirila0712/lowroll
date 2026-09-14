@@ -4,9 +4,12 @@ import dev.andrei.chirila.lowroll.bill.Bill;
 import dev.andrei.chirila.lowroll.provider.Provider;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
@@ -25,8 +28,12 @@ public class EmailIngestionLog {
     private LocalDateTime processedAt;
     @Column(name = "status")
     private EmailIngestionLogStatus status;
-    private Provider matchedProviderId;
-    private Bill matchedBillId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "matched_provider_id")
+    private Provider provider;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "matched_bill_id")
+    private Bill bill;
     @Column(name = "raw_sender")
     private String rawSender;
     @Column(name = "raw_subject")
@@ -70,20 +77,20 @@ public class EmailIngestionLog {
         this.status = status;
     }
 
-    public Provider getMatchedProviderId() {
-        return matchedProviderId;
+    public Provider getProvider() {
+        return provider;
     }
 
-    public void setMatchedProviderId(Provider matchedProviderId) {
-        this.matchedProviderId = matchedProviderId;
+    public void setProvider(Provider provider) {
+        this.provider = provider;
     }
 
-    public Bill getMatchedBillId() {
-        return matchedBillId;
+    public Bill getBill() {
+        return bill;
     }
 
-    public void setMatchedBillId(Bill matchedBillId) {
-        this.matchedBillId = matchedBillId;
+    public void setBill(Bill bill) {
+        this.bill = bill;
     }
 
     public String getRawSender() {

@@ -41,4 +41,9 @@ public class Category {
     public List<Provider> getProviders() {
         return providers;
     }
+
+    public void addProvider(Provider provider) {
+        providers.add(provider);
+        provider.setCategory(this);
+    }
 }

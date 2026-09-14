@@ -1,16 +1,25 @@
 package dev.andrei.chirila.lowroll.bill;
 
 import dev.andrei.chirila.lowroll.account.Account;
+import dev.andrei.chirila.lowroll.attachment.Attachment;
+import dev.andrei.chirila.lowroll.ingestion.EmailIngestionLog;
 import dev.andrei.chirila.lowroll.provider.Provider;
+import dev.andrei.chirila.lowroll.subscription.Subscription;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "bills")
@@ -18,8 +27,12 @@ public class Bill {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Provider providerId;
-    private Account accountId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "provider_id")
+    private Provider provider;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id")
+    private Account account;
     @Column(name = "amount")
     private Double amount;
     @Column(name = "currency")
@@ -34,10 +47,15 @@ public class Bill {
     private BillStatus status;
     @Column(name = "source")
     private BillSource source;
-    @Column(name = "subscription_id")
-    private Subscription subscriptionId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subscription_id")
+    private Subscription subscription;
     @Column(name = "notes")
     private String notes;
+    @OneToMany(mappedBy = "bill", fetch = FetchType.LAZY)
+    private List<Attachment> attachments = new ArrayList<>();
+    @OneToMany(mappedBy = "bill", fetch = FetchType.LAZY)
+    private List<EmailIngestionLog> ingestionLogs = new ArrayList<>();
 
     public Bill() {}
 
@@ -45,20 +63,20 @@ public class Bill {
         return id;
     }
 
-    public Provider getProviderId() {
-        return providerId;
+    public Provider getProvider() {
+        return provider;
     }
 
-    public void setProviderId(Provider providerId) {
-        this.providerId = providerId;
+    public void setProvider(Provider provider) {
+        this.provider = provider;
     }
 
-    public Account getAccountId() {
-        return accountId;
+    public Account getAccount() {
+        return account;
     }
 
-    public void setAccountId(Account accountId) {
-        this.accountId = accountId;
+    public void setAccount(Account account) {
+        this.account = account;
     }
 
     public Double getAmount() {
@@ -117,12 +135,12 @@ public class Bill {
         this.source = source;
     }
 
-    public Subscription getSubscriptionId() {
-        return subscriptionId;
+    public Subscription getSubscription() {
+        return subscription;
     }
 
-    public void setSubscriptionId(Subscription subscriptionId) {
-        this.subscriptionId = subscriptionId;
+    public void setSubscription(Subscription subscription) {
+        this.subscription = subscription;
     }
 
     public String getNotes() {
@@ -131,5 +149,23 @@ public class Bill {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public void addAttachment(Attachment attachment) {
+        attachments.add(attachment);
+        attachment.setBill(this);
+    }
+
+    public List<Attachment> getAttachments() {
+        return attachments;
+    }
+
+    public void addIngestionLog(EmailIngestionLog ingestionLog) {
+        ingestionLogs.add(ingestionLog);
+        ingestionLog.setBill(this);
+    }
+
+    public List<EmailIngestionLog> getIngestionLogs() {
+        return ingestionLogs;
     }
 }
