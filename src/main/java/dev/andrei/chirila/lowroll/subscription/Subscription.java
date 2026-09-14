@@ -1,15 +1,22 @@
 package dev.andrei.chirila.lowroll.subscription;
 
+import dev.andrei.chirila.lowroll.bill.Bill;
 import dev.andrei.chirila.lowroll.provider.Provider;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Currency;
+import java.util.List;
 
 @Entity
 @Table(name = "subscriptions")
@@ -17,7 +24,9 @@ public class Subscription {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Provider providerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "provider_id")
+    private Provider provider;
     @Column(name = "name")
     private String name;
     @Column(name = "expected_amount")
@@ -34,6 +43,8 @@ public class Subscription {
     private SubscriptionStatus status;
     @Column(name = "next_expected_date")
     private LocalDate nextExpectedDate;
+    @OneToMany(mappedBy = "subscription", fetch = FetchType.LAZY)
+    private List<Bill> bills = new ArrayList<>();
 
     public Subscription() {}
 
@@ -41,12 +52,12 @@ public class Subscription {
         return id;
     }
 
-    public Provider getProviderId() {
-        return providerId;
+    public Provider getProvider() {
+        return provider;
     }
 
-    public void setProviderId(Provider providerId) {
-        this.providerId = providerId;
+    public void setProvider(Provider providerId) {
+        this.provider = providerId;
     }
 
     public String getName() {
@@ -111,5 +122,10 @@ public class Subscription {
 
     public void setNextExpectedDate(LocalDate nextExpectedDate) {
         this.nextExpectedDate = nextExpectedDate;
+    }
+
+    public void addBill(Bill bill) {
+        bills.add(bill);
+        bill.setSubscription(this);
     }
 }

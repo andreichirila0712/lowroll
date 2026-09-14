@@ -3,9 +3,12 @@ package dev.andrei.chirila.lowroll.attachment;
 import dev.andrei.chirila.lowroll.bill.Bill;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
@@ -16,7 +19,9 @@ public class Attachment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Bill billId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bill_id")
+    private Bill bill;
     @Column(name = "file_path")
     private String filePath;
     @Column(name = "original_filename")
@@ -32,12 +37,12 @@ public class Attachment {
         return id;
     }
 
-    public Bill getBillId() {
-        return billId;
+    public Bill getBill() {
+        return bill;
     }
 
-    public void setBillId(Bill billId) {
-        this.billId = billId;
+    public void setBill(Bill bill) {
+        this.bill = bill;
     }
 
     public String getFilePath() {
