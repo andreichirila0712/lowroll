@@ -2,3 +2,12 @@ spring:
   application:
     name:
       lowroll
+  servlet:
+    multipart:
+      max-file-size: 3MB
+      max-request-size: 7MB
+      enabled: true
+
+clamav:
+  host: clamav
+  port: 3310
